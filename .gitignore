@@ -1,0 +1,5 @@
+directe/*.pth
+indirecte/*.pth
+directe/__pycache__/
+indirecte/__pycache__/
+indirecte/dades_sintetiques_meinhardt.npy
