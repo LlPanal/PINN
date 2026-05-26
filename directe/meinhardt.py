@@ -45,7 +45,7 @@ t_ic = torch.zeros(n_ic, 1, device=device)
 xt_ic = torch.cat([x_ic, y_ic, t_ic], dim=1)
 
 # Pertorbació 
-n, m = 2.0, 5.0
+n, m = 5.0, 0.0
 pertorbacio = 0.1 * torch.cos(n * np.pi * x_ic / L) * torch.cos(m * np.pi * y_ic / L)
 u1_target = torch.full((n_ic, 1), u1_eq, device=device) + pertorbacio
 u2_target = torch.full((n_ic, 1), u2_eq, device=device) + pertorbacio
