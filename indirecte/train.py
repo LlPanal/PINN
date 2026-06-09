@@ -8,14 +8,15 @@ def train_invers_complet(
     initial_loss_fn,
     collocation_pts, 
     epochs=15000, 
-    lr=1e-3
+    lr=1e-3,
+    w_data = 100.0,
+    w_ic = 100.0,
+    w_bc = 10.0,
+    w_physics = 1.0
 ):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
-    w_data = 100.0
-    w_ic = 100.0
-    w_bc = 10.0
-    w_physics = 1.0
+    
     
     for epoch in range(epochs):
         optimizer.zero_grad()

@@ -168,7 +168,7 @@ def plot_burgers(model):
     plt.title('Comparativa PINN vs Solució Exacta')
     plt.xlabel('Posició ($x$)')
     plt.ylabel('Amplitud $u(x, t)$')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.legend(loc='best', fontsize='x-large')    
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()

@@ -19,7 +19,7 @@ def train(
         loss_ic = initial_loss_fn(model)
         loss_bc = boundary_loss_fn(model)
         loss_physics = physics_loss_fn(model, collocation_pts)
-
+        
         total_loss = weight_ic * loss_ic + weight_bc * loss_bc + loss_physics
         
         total_loss.backward()

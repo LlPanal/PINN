@@ -12,8 +12,20 @@ L = 25.0
 t_max = 5.0
 data_path = "dades_sintetiques_meinhardt.npy"
 model_path = "meinhardt_pinn_inverse.pth"
-torch.manual_seed(42)
+epochs = 50000
+lr = 1e-3
+n, m = 5.0, 0.0
+n_data = 10000
+n_collocation = 20000
+n_ic = 2000
+n_bc = 2000
+w_data = 100.0
+w_ic = 100.0
+w_bc = 10.0
+w_physics = 1.0
 
+
+torch.manual_seed(42)
 
 """
 Valors reals del model de Meinhardt:
@@ -40,7 +52,6 @@ dataset = np.load(data_path)
 temps_permesos = np.linspace(0, t_max, 11)
 mask_train = np.isin(np.round(dataset[:, 2], decimals=4), np.round(temps_permesos, decimals=4))
 dataset= dataset[mask_train]
-n_data = 10000
 idx_aleatoris = np.random.choice(dataset.shape[0], n_data, replace=False)
 dades_entrenament = dataset[idx_aleatoris, :]
 xyt_data = torch.tensor(dades_entrenament[:, 0:3], dtype=torch.float32, device=device)
@@ -48,13 +59,11 @@ u_target = torch.tensor(dades_entrenament[:, 3:5], dtype=torch.float32, device=d
 
 
 # punts de colocaicio, condicio inicial i frontera
-n_collocation = 20000
 x_col = torch.empty(n_collocation, 1, device=device).uniform_(0.0, L)
 y_col = torch.empty(n_collocation, 1, device=device).uniform_(0.0, L)
 t_col = torch.empty(n_collocation, 1, device=device).uniform_(0.0, t_max)
 collocation_pts = torch.cat([x_col, y_col, t_col], dim=1).requires_grad_(True)
 
-n_ic = 2000
 x_ic = torch.empty(n_ic, 1, device=device).uniform_(0.0, L)
 y_ic = torch.empty(n_ic, 1, device=device).uniform_(0.0, L)
 t_ic = torch.zeros(n_ic, 1, device=device)
@@ -62,12 +71,10 @@ xt_ic = torch.cat([x_ic, y_ic, t_ic], dim=1)
 
 u1_eq = parametres_fixos.get('beta', 1.0) / parametres_fixos.get('mu', 1.0)
 u2_eq = (parametres_fixos.get('mu', 1.0)**2) / (parametres_fixos.get('alpha', 2.0) * parametres_fixos.get('beta', 1.0))
-n, m = 5.0, 0.0
 pertorbacio = 0.1 * torch.cos(n * np.pi * x_ic / L) * torch.cos(m * np.pi * y_ic / L)
 u1_ic_target = torch.full((n_ic, 1), u1_eq, device=device) + pertorbacio
 u2_ic_target = torch.full((n_ic, 1), u2_eq, device=device) + pertorbacio
 
-n_bc = 2000
 t_bc = torch.empty(n_bc, 1, device=device).uniform_(0.0, t_max)
 y_bc = torch.empty(n_bc, 1, device=device).uniform_(0.0, L)
 x_bc = torch.empty(n_bc, 1, device=device).uniform_(0.0, L)
@@ -127,7 +134,6 @@ if __name__ == "__main__":
         params_to_learn=parametres_a_aprendre, 
         fixed_params=parametres_fixos
     ).to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
     print("\nIniciant l'entrenament de la PINN (Modular)...")
     print(f"Fixats: {parametres_fixos}")
     print(f"A Aprendre: {parametres_a_aprendre}\n")
@@ -139,8 +145,12 @@ if __name__ == "__main__":
         boundary_loss_fn=boundary_loss_fn,
         initial_loss_fn=initial_loss_fn,
         collocation_pts=collocation_pts,
-        epochs=1000, 
-        lr=1e-3
+        epochs=epochs, 
+        lr=lr,
+        w_data=w_data,
+        w_ic=w_ic,
+        w_bc=w_bc,
+        w_physics=w_physics
     )
 
     torch.save(model.state_dict(), model_path)

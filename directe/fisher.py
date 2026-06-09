@@ -129,7 +129,7 @@ def plot_results(model):
     plt.figure(figsize=(10, 5))
     plt.pcolormesh(T, X, U_pred, cmap='jet', shading='auto')
     plt.colorbar(label='u(x, t)')
-    plt.title('PINN Fisher-KPP: Evolució de la funció Heaviside')
+    plt.title('PINN Fisher: Evolució de la funció Heaviside')
     plt.xlabel('Temps (t)')
     plt.ylabel('Espai (x)')
     plt.show()
@@ -144,13 +144,13 @@ def plot_results(model):
         u_pinn = U_pred[idx_t, :]
         u_real = U_real_matrix[idx_t, :]
         
-        plt.plot(x_grid, u_real, color=colors[idx], linestyle='-', alpha=0.3, linewidth=4, label=f'Real t={t_val}')
+        plt.plot(x_grid, u_real, color=colors[idx], linestyle='-', alpha=0.3, linewidth=4, label=f'BDF t={t_val}')
         plt.plot(x_grid, u_pinn, color=colors[idx], linestyle='--', linewidth=2, label=f'PINN t={t_val}')
 
     plt.title('Comparació: Front d\'ona des de condició d\'Heaviside')
     plt.xlabel('Posició (x)')
     plt.ylabel('u(x, t)')
-    plt.legend(loc='best')
+    plt.legend(loc='best', fontsize='x-large')    
     plt.grid(True, alpha=0.3)
     plt.show()
 
